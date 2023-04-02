@@ -7,7 +7,7 @@
         <img src="{{user.image_url}}" alt="">
     </div>
     <div>
-        <h1>{{user.first_name}} {{user.last_name}}</h1>
+        <h1>{{user.full_name}}</h1>
         <form>
             <input type="submit" value="Edit" class="btn btn-primary" formaction="/users/{{user.id}}/edit">
             <input type="submit" class="btn btn-danger" value="Delete" formaction="/users/{{user.id}}/delete" formmethod="POST">
