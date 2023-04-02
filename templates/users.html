@@ -6,7 +6,7 @@
 <h1>Users</h1>
 <ul>
     {% for u in all_users %}
-    <li><a href="/users/{{u.id}}">{{u.first_name}} {{u.last_name}}</a></li>
+    <li><a href="/users/{{u.id}}">{{u.full_name}}</a></li>
     {% endfor %}
 </ul>
 <a class="btn btn-secondary btn-sm" href="/users/new">Add user</a>
