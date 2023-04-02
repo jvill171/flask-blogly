@@ -16,35 +16,31 @@ debug=DebugToolbarExtension(app)
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 connect_db(app)
+db.create_all()
 
 # ************************************************************
-# REDIRECT WILL BE FIXED IN A LATER STEP
+# REDIRECT FROM "/" WILL BE FIXED LATER
 # ************************************************************
 @app.route('/')
 def homepage():
     '''Redirect to list of users'''
-    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ IN [/]")
     return redirect('/users')
 
 @app.route('/users')
 def users_page():
     '''Show all users. Make these links to view the detail page for the user. Have a link here to the add-user form'''
-    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ IN [/users]")
-    all_users = User.query.all()
+    all_users = User.query.order_by(User.last_name, User.first_name).all()
 
     return render_template('users.html', all_users=all_users)
-
 
 @app.route('/users/new')
 def newUser():
     '''Show an add form for users'''
-    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ IN [/users/new]")
     return render_template('create.html')
 
 @app.route('/users/new', methods=['POST'])
 def do_newUser():
     '''Process the add form, adding a new user and going back to /users'''
-    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ IN [/users/new] POST")
     f_name = request.form.get('first')
     l_name = request.form.get('last')
     img_url = request.form.get('image')
@@ -57,20 +53,17 @@ def do_newUser():
     db.session.add(newUser)
     db.session.commit()
     
-    print(User.query.all())
     return redirect('/users')
 
 @app.route('/users/<int:user_id>')
 def userDetails(user_id):
     '''Show information about the given user. Have a button to get to their edit page, and to delete the user'''
-    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ IN [/users/user_id]")
     user = User.query.get_or_404(user_id)
     return render_template('user-page.html', user=user)
 
 @app.route('/users/<int:user_id>/edit')
 def editUser(user_id):
     '''Show the edit page for a user. Have a cancel button that returns to the detail page for a user, and a save button that updates the user.'''
-    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ IN [/users/user_id/edit]")
     user = User.query.get_or_404(user_id)
     return render_template('edit.html', user=user)
 
@@ -80,7 +73,6 @@ def do_editUser(user_id):
     fname = request.form['first']
     lname = request.form['last']
     img = request.form['image']
-    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ IN [/users/user_id/edit] POST")
     
     user = User.query.get_or_404(user_id)
     user.first_name = fname
@@ -95,7 +87,6 @@ def do_editUser(user_id):
 @app.route('/users/<int:user_id>/delete', methods=['POST'])
 def do_deleteUser(user_id):
     '''Delete the user.'''
-    print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ IN [/users/user_id/delete]")
     User.query.filter_by(id=user_id).delete()
     db.session.commit()
     return redirect("/users")
